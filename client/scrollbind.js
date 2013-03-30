@@ -73,7 +73,7 @@
     this.start = function(newWsServerURL) {
       this.stop();
       wsServerURL = newWsServerURL || wsServerURL;
-      isUnderControl = true;
+      setIsUnderControl(true);
 
       console.log('init scrollbind');
       console.log('connecting to: '+wsServerURL);
