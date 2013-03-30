@@ -4,15 +4,26 @@
     <script src="./jquery-1.9.1.min.js"></script>
     <script src="./scrollbind.js"></script>
     <script type="text/javascript">
+
 $(function() {
-    $('#source').text('<html>'+$('html').html()+'</html>');
-    var scrollBind = new $.scrollBind({
+    $('#html-source').text('<html>'+$('html').html()+'</html>');
+    $.get('./scrollbind.js', function(data) {
+      $('#js-source').text(data);
+    });
+
+    var scrollBind = new scrollBinder({
       wsServerURL: 'ws://127.0.0.1:8080/',
       window: $(window),
       body: $('body'),
+      createIndicators: true,
     });
 
-    scrollBind.start();
+    scrollBind.start(false);
+
+    $('#master').click(function() {
+      var masterMode = $(this).is(':checked');
+      scrollBind.setMasterMode(masterMode);
+    });
 });
     </script>
     <style type="text/css">
@@ -24,11 +35,13 @@ $(function() {
   </head>
   <body>
     <h1>Scroll bind test</h1>
-    <input type="text" id="text"></input>
-    <button id="send">send</button>
-    <ul id="log">
-    </ul>
-    <h2>Source</h2>
-    <pre id="source">test</pre>
+
+    <input type="checkbox" id="master"></input>
+    <label for="master">master mode <span></span></label>
+
+    <h2>HTML Source</h2>
+    <pre id="html-source"></pre>
+    <h2>JavaScript Source</h2>
+    <pre id="js-source"></pre>
   </body>
 </html>
