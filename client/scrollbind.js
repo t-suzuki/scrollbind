@@ -70,11 +70,10 @@
     };
 
     //! initialize connection and start scrollbind.
-    this.start = function(isMasterOrUndefined) {
+    this.start = function(newWsServerURL) {
       this.stop();
+      wsServerURL = newWsServerURL || wsServerURL;
       isUnderControl = true;
-
-      this.setMasterMode(isMasterOrUndefined);
 
       console.log('init scrollbind');
       console.log('connecting to: '+wsServerURL);
@@ -91,7 +90,7 @@
 
     //! close connection.
     this.stop = function() {
-      if (self.ws) {
+      if (self.ws && self.ws.readyStage == WebSocket.constructor.OPEN) {
         console.log('closing ws connection');
         self.ws.close();
       }

@@ -12,17 +12,23 @@ $(function() {
     });
 
     var scrollBind = new scrollBinder({
-      wsServerURL: 'ws://127.0.0.1:8080/',
-      window: $(window),
-      body: $('body'),
-      createIndicators: true,
-    });
+        wsServerURL: 'ws://127.0.0.1:8080/',
+        window: $(window),
+        body: $('body'),
+        createIndicators: true,
+      });
 
-    scrollBind.start(false);
+    scrollBind.start();
 
     $('#master').click(function() {
       var masterMode = $(this).is(':checked');
       scrollBind.setMasterMode(masterMode);
+    });
+
+    $('#serveraddr').change(function(e) {
+      var addr = e.target.value;
+      console.log(addr);
+      scrollBind.start('ws://'+addr+':8080/');
     });
 });
     </script>
@@ -36,6 +42,9 @@ $(function() {
   <body>
     <h1>Scroll bind test</h1>
 
+    <label for="serveraddr">Server address:</label>
+    <input id="serveraddr" value="127.0.0.1"></input>
+    <br />
     <input type="checkbox" id="master"></input>
     <label for="master">master mode <span></span></label>
 
