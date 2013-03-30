@@ -12,6 +12,8 @@
     var ws;
     var isUnderControl;
 
+    this.onOpen  = param.onOpen || undefined;
+
     // set user scroll hook.
     $(window).scroll(function() {
       var pos = $(this).scrollTop();
@@ -86,6 +88,9 @@
           onReceiveScroll(e.data);
         }
       };
+      if (this.onOpen) {
+        self.ws.onopen = this.onOpen;
+      }
     };
 
     //! close connection.

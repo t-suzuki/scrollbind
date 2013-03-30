@@ -12,13 +12,21 @@ $(function() {
     });
 
     var scrollBind = new scrollBinder({
-        wsServerURL: 'ws://127.0.0.1:8080/',
         window: $(window),
         body: $('body'),
         createIndicators: true,
+        onOpen: function() {
+          $('#status').text('OK');
+        }
       });
 
-    scrollBind.start();
+    var connect = function (addr) {
+      scrollBind.start('ws://'+addr+':8080/');
+      console.log(addr);
+      $('#connected-to').text(addr);
+      $('#status').text('connecting...');
+      $('#serveraddr').attr('value', addr);
+    };
 
     $('#master').click(function() {
       var masterMode = $(this).is(':checked');
@@ -27,9 +35,10 @@ $(function() {
 
     $('#serveraddr').change(function(e) {
       var addr = e.target.value;
-      console.log(addr);
-      scrollBind.start('ws://'+addr+':8080/');
+      connect(addr);
     });
+
+    connect(location.hostname);
 });
     </script>
     <style type="text/css">
@@ -43,10 +52,14 @@ $(function() {
     <h1>Scroll bind test</h1>
 
     <label for="serveraddr">Server address:</label>
-    <input id="serveraddr" value="127.0.0.1"></input>
+    <input id="serveraddr" value=""></input>
     <br />
     <input type="checkbox" id="master"></input>
     <label for="master">master mode <span></span></label>
+    <p>connected to:
+      <span id="connected-to"></span>
+      <span id="status"></span>
+    </p>
 
     <h2>HTML Source</h2>
     <pre id="html-source"></pre>
