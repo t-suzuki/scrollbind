@@ -11,7 +11,7 @@ Getting Started
 
 ### Prerequisites
 
-* Node.js (0.10.4)
+* Node.js (0.10.2)
 * Web browser supporting WebSocket (Safari, Chrome, etc.)
 
 ### Install
