@@ -1,7 +1,7 @@
 scrollbind
 ==========
 
-scrollbind is a client script with a Node.js WebSocket server to
+scrollbind is a client-side JavaScript with a Node.js WebSocket server to
 share scroll between browsers. Currently this is just a test project
 for getting familiar with WebSocket, and not intended for realistic
 situations.
