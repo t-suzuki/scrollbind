@@ -10,7 +10,7 @@
     var indicatorSlave = param.indicatorSlave || undefined;
     var self = this;
     var ws;
-    var isUnderControl;
+    var isMaster;
 
     this.onOpen  = param.onOpen || undefined;
 
@@ -49,8 +49,8 @@
       body.append(indicator);
     }
 
-    var setIndicator = function(master) {
-      if (master) {
+    var updateIndicator = function() {
+      if (isMaster) {
         indicatorSlave && indicatorSlave.hide();
         indicatorMaster && indicatorMaster.show();
       } else {
@@ -59,38 +59,28 @@
       }
     }
 
-    // set and unset remote controlled scrolling.
-    var setIsUnderControl = function(on) {
-      if (on) {
-        console.log('under control');
-        isUnderControl = true;
-      } else {
-        console.log('not under control');
-        isUnderControl = false;
-      }
-      indicator && setIndicator(!on);
-    };
-
     //! initialize connection and start scrollbind.
     this.start = function(newWsServerURL) {
       this.stop();
       wsServerURL = newWsServerURL || wsServerURL;
-      setIsUnderControl(true);
 
       console.log('init scrollbind');
       console.log('connecting to: '+wsServerURL);
       self.ws = new WebSocket(wsServerURL);
       self.ws.onmessage = function(e) {
-        console.log('ws.recv:');
-        console.log(e.data);
-
-        if (isUnderControl) {
+        if (isMaster) {
+          // console.log('ignoring');
+        } else {
+          console.log('ws.recv:');
+          console.log(e.data);
           onReceiveScroll(e.data);
         }
       };
       if (this.onOpen) {
         self.ws.onopen = this.onOpen;
       }
+
+      this.setMasterMode(false);
     };
 
     //! close connection.
@@ -101,37 +91,43 @@
       }
     };
 
-    //! be a master
-    this.setMasterMode = function(isMaster) {
-      setIsUnderControl(!isMaster);
-      console.log('now I am '+(isMaster?'the master':'a slave'));
+    //! be a master/slave
+    this.setMasterMode = function(on) {
+      if (on) {
+        console.log('master mode');
+        isMaster = true;
+      } else {
+        console.log('slave mode');
+        isMaster = false;
+      }
+      indicator && updateIndicator(on);
     };
 
     //! get if I am a master
     this.isMasterMode = function() {
-      return !isUnderControl;
+      return isMaster;
     }
 
     // user scroll. if we are the master, send command to control slaves.
     var onScroll = function(pos) {
-      if (isUnderControl) {
-        // console.log('sending nothing becaus we are under control');
-      } else {
+      if (isMaster) {
         console.log('on self scroll:'+pos);
         console.log('sending scroll to server');
         if (self.ws && self.ws.readyStage == WebSocket.constructor.OPEN) {
           self.ws.send(pos);
         }
+      } else {
+        // console.log('sending nothing becaus we are under control');
       }
     };
 
     // received scroll. if we are not the master, follow it.
     var onReceiveScroll = function(pos) {
-      if (isUnderControl) {
+      if (isMaster) {
+        console.log('remote scroll is not enabled');
+      } else {
         console.log('on scroll recv:'+pos);
         body.scrollTop(pos);
-      } else {
-        console.log('remote scroll is not enabled');
       }
     };
 
