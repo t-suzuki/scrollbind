@@ -4,6 +4,7 @@ var WebSocket = require('websocket').server,
     path      = require('path'),
     url       = require('url'),
     staticFilesPath = path.join(process.cwd(), '../client'),
+    port = 8080,
     wsServer,
     httpServer;
 
@@ -56,7 +57,7 @@ httpServer = http.createServer(function(request, response) {
   }, notfound);
 
 });
-httpServer.listen(8080);
+httpServer.listen(port);
 
 // Create WebSocket Server
 wsServer = new WebSocket({
@@ -74,3 +75,4 @@ wsServer.on('connect', function(connection) {
   })
 });
 
+console.log('starting server at ' + port + ' ...');
